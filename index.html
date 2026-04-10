@@ -606,15 +606,15 @@
 <body>
 
 <nav class="nav">
-  <button class="nav-tab active" onclick="showSection('workflow')">Workflow</button>
-  <button class="nav-tab" onclick="showSection('sacral')">Sacral Hits</button>
-  <button class="nav-tab" onclick="showSection('prompts')">First Video</button>
+  <button class="nav-tab active" onclick="showSection('sacral')">Capture</button>
+  <button class="nav-tab" onclick="showSection('prompts')">Prompts</button>
   <button class="nav-tab" onclick="showSection('rhythm')">Weekly Rhythm</button>
+  <button class="nav-tab" onclick="showSection('workflow')">Workflow</button>
   <button class="nav-tab" onclick="showSection('setup')">⚙ Setup</button>
 </nav>
 
 <!-- ══ WORKFLOW ══ -->
-<div class="section active" id="workflow">
+<div class="section" id="workflow">
   <div class="hero">
     <div class="hero-eyebrow">MG Content Engine · Manifesting Generator</div>
     <h1 class="hero-title">Respond.<br>Burst. <em>Distribute.</em></h1>
@@ -637,14 +637,14 @@
       <div class="card-number">Step 01</div>
       <div class="card-title">Response Capture</div>
       <span class="card-time time-daily">Daily · 2 min</span>
-      <div class="card-body">Log Sacral Hits as they happen — the ooh, the mm-hmm, the spark. A customer question, a lab moment, something in your feed. Don't analyze. Just capture. This is your content source.<br><br>Works from any device — everything syncs to your Google Sheet.</div>
+      <div class="card-body">Log what gets your attention as it happens — the ooh, the mm-hmm, the spark. A customer question, a lab moment, something in your feed. Don't analyze. Just capture. This is your content source.<br><br>Works from any device — everything syncs to your Google Sheet.</div>
     </div>
     <div class="card">
       <div class="card-accent accent-terracotta"></div>
       <div class="card-number">Step 02</div>
       <div class="card-title">The Burst Session</div>
       <span class="card-time time-weekly">Weekly · 60–90 min</span>
-      <div class="card-body">Once a week, review your Sacral Hits. Pick 2–3 that still feel alive. Film back to back — talking points only, no full script. Your Aries rising means you're better unrehearsed. Over-preparation is the Aquarius anxiety loop.<br><br>Your three brands self-sort naturally:</div>
+      <div class="card-body">Once a week, review your captures. Pick 2–3 that still feel alive. Film back to back — talking points only, no full script. Your Aries rising means you're better unrehearsed. Over-preparation is the Aquarius anxiety loop.<br><br>Your three brands self-sort naturally:</div>
       <div class="brand-row">
         <span class="brand-badge brand-oyin">Oyin — lab &amp; ritual</span>
         <span class="brand-badge brand-jamyla">Hey Jamyla — identity &amp; philosophy</span>
@@ -664,16 +664,13 @@
       <div class="card-title">The Witness Review</div>
       <span class="card-time time-monthly">Monthly · 20 min</span>
       <div class="card-body">Gate 13.2 — the Witness. Review what resonated. Not just metrics — your gut response too. What felt true? What felt performed? Prune accordingly.<br><br>You don't need more content. You need more of what's actually yours.</div>
-    </div>
-  </div>
-</div>
 
-<!-- ══ SACRAL HITS ══ -->
-<div class="section" id="sacral">
+<!-- ══ SACRAL HITS / CAPTURE ══ -->
+<div class="section active" id="sacral">
   <div class="hero">
     <div class="hero-eyebrow">Step 01 of 3 · Response Capture</div>
-    <h1 class="hero-title">Sacral <em>Hits.</em></h1>
-    <p class="hero-sub">When something makes you go ooh or mm-hmm — capture it here. Syncs to your Google Sheet so it's always with you.</p>
+    <h1 class="hero-title">Capture <em>the spark.</em></h1>
+    <p class="hero-sub">When something makes you go ooh or mm-hmm — log it here. This is your content source. Syncs to your Google Sheet from any device.</p>
     <div class="status-badge" onclick="showSection('setup')">
       <div class="status-dot" id="sacral-dot"></div>
       <span id="sacral-status-text">Not connected · tap to set up</span>
@@ -707,17 +704,17 @@
   </div>
 
   <div class="section-header" style="padding-bottom:16px;">
-    <div class="section-label">Your Hits</div>
+    <div class="section-label">Your Captures</div>
     <h2 class="section-title" style="font-size:22px;">What's alive right now</h2>
   </div>
   <div class="hits-list" id="hits-list"></div>
 </div>
 
-<!-- ══ FIRST VIDEO ══ -->
+<!-- ══ PROMPTS ══ -->
 <div class="section" id="prompts">
   <div class="hero">
-    <div class="hero-eyebrow">YouTube · First Video Back</div>
-    <h1 class="hero-title">Not a <em>launch.</em><br>A Sacral Hit<br>on camera.</h1>
+    <div class="hero-eyebrow">YouTube · Video Prompts</div>
+    <h1 class="hero-title">Not a <em>launch.</em><br>A captured moment<br>on camera.</h1>
     <p class="hero-sub">Your first video isn't a production. It's a response captured on film. Pick a brand, pick a prompt, press record.</p>
   </div>
 
@@ -922,7 +919,7 @@ function doGet(e) {
 
 <script>
   // ── NAV ──
-  const sections = ['workflow','sacral','prompts','rhythm','setup'];
+  const sections = ['sacral','prompts','rhythm','workflow','setup'];
   function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
