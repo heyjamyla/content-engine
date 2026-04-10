@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MG Content Engine — Jamyla</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #F2EDE6;
+    --surface:      #EDE8E0;
+    --surface2:     #E6DFD5;
+    --panel:        #F7F4EF;
+
+    --ink:          #3D3730;
+    --ink-mid:      rgba(61,55,48,0.55);
+    --ink-soft:     rgba(61,55,48,0.28);
+    --border:       rgba(61,55,48,0.10);
+
+    /* Hero / header color — toasted golden mustard */
+    --hero-bg:      #C49A3C;
+    --hero-bg2:     #B8892E;
+    --hero-text:    #FDF6E3;
+    --hero-sub:     rgba(253,246,227,0.78);
+    --hero-eyebrow: rgba(253,246,227,0.65);
+
+    /* Morandi accents */
+    --terracotta:   #B5816A;
+    --sage:         #8A9E8C;
+    --slate:        #8594A3;
+    --mauve:        #A48FA0;
+    --wheat:        #C4AA82;
+    --mustard:      #C49A3C;
+
+    --terracotta-t: rgba(181,129,106,0.12);
+    --sage-t:       rgba(138,158,140,0.12);
+    --slate-t:      rgba(133,148,163,0.12);
+    --mauve-t:      rgba(164,143,160,0.12);
+    --wheat-t:      rgba(196,170,130,0.14);
+    --mustard-t:    rgba(196,154,60,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-tab {
+    flex: 1;
+    min-width: 100px;
+    padding: 15px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { color: var(--ink); }
+  .nav-tab.active { color: var(--mustard); border-bottom-color: var(--mustard); }
+
+  /* ── SECTIONS ── */
+  .section { display: none; animation: rise 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HERO — golden mustard ── */
+  .hero {
+    background: linear-gradient(135deg, var(--hero-bg) 0%, var(--hero-bg2) 100%);
+    padding: 52px 36px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -70px; right: -70px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50px; left: 55%;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--hero-eyebrow);
+    margin-bottom: 14px;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 7vw, 54px);
+    font-weight: 300;
+    color: var(--hero-text);
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: rgba(253,246,227,0.9);
+  }
+  .hero-sub {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 12.5px;
+    color: var(--hero-sub);
+    line-height: 1.8;
+    max-width: 440px;
+  }
+
+  /* connection status badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.18);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--hero-text);
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .status-badge:hover { background: rgba(255,255,255,0.26); }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    flex-shrink: 0;
+  }
+  .status-dot.connected { background: #8fdb8f; }
+  .status-dot.error     { background: #e8a0a0; }
+
+  /* ── SECTION HEADER ── */
+  .section-header { padding: 36px 36px 4px; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mustard);
+    margin-bottom: 7px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.8;
+    max-width: 500px;
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    padding: 24px 36px 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 26px 26px 26px 30px;
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 20px rgba(61,55,48,0.06); }
+  .card-accent {
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 3px 0 0 3px;
+  }
+  .accent-terracotta { background: var(--terracotta); }
+  .accent-sage       { background: var(--sage); }
+  .accent-wheat      { background: var(--wheat); }
+  .accent-mauve      { background: var(--mauve); }
+  .accent-mustard    { background: var(--mustard); }
+
+  .card-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+  .card-time {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .time-daily   { background: var(--sage-t);    color: var(--sage); }
+  .time-weekly  { background: var(--mustard-t); color: var(--mustard); }
+  .time-monthly { background: var(--mauve-t);   color: var(--mauve); }
+  .card-body {
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: var(--ink-mid);
+    font-weight: 300;
+  }
+  .brand-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .brand-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 11px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .brand-oyin   { background: var(--terracotta-t); border-color: var(--terracotta); color: var(--terracotta); }
+  .brand-jamyla { background: var(--mauve-t);      border-color: var(--mauve);      color: var(--mauve); }
+  .brand-exit   { background: var(--sage-t);       border-color: var(--sage);       color: var(--sage); }
+
+  /* ── FORM ── */
+  .hit-form { padding: 24px 36px; }
+  .hit-form-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 30px;
+  }
+  .form-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    display: block;
+    margin-bottom: 9px;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 12px 14px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 20px;
+    -webkit-appearance: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--mustard);
+    background: var(--panel);
+  }
+  .form-textarea { resize: vertical; min-height: 88px; }
+
+  .gut-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+  .gut-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-mid);
+  }
+  .gut-btn:hover { border-color: var(--mustard); color: var(--ink); }
+  .gut-btn.selected { background: var(--mustard); color: white; border-color: var(--mustard); }
+
+  .save-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--mustard);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .save-btn:hover { opacity: 0.85; }
+  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── HITS LIST ── */
+  .hits-list { padding: 0 36px 44px; display: flex; flex-direction: column; gap: 10px; }
+  .hit-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .hit-item-left { flex: 1; }
+  .hit-item-brand {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .hit-item-text { font-size: 13px; line-height: 1.65; font-weight: 300; }
+  .hit-item-gut { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-soft); margin-top: 5px; }
+  .hit-delete {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 18px; line-height: 1;
+    padding: 2px 4px; transition: color 0.15s; flex-shrink: 0;
+  }
+  .hit-delete:hover { color: var(--terracotta); }
+  .empty-state {
+    text-align: center;
+    padding: 52px 24px;
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 3px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 2;
+  }
+
+  /* ── PROMPTS ── */
+  .prompt-container { padding: 24px 36px 44px; }
+  .prompt-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+  .prompt-filter {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: 'DM Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--ink-mid);
+  }
+  .prompt-filter:hover { border-color: var(--ink-mid); color: var(--ink); }
+  .prompt-filter.active-oyin   { background: var(--terracotta); color: white; border-color: var(--terracotta); }
+  .prompt-filter.active-jamyla { background: var(--mauve);      color: white; border-color: var(--mauve); }
+  .prompt-filter.active-exit   { background: var(--sage);       color: white; border-color: var(--sage); }
+  .prompt-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 30px;
+    margin-bottom: 14px;
+  }
+  .prompt-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-soft); margin-bottom: 14px;
+  }
+  .prompt-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3.5vw, 26px);
+    font-weight: 300; font-style: italic;
+    line-height: 1.4; color: var(--ink); margin-bottom: 18px;
+  }
+  .prompt-meta { font-size: 12.5px; color: var(--ink-mid); line-height: 1.8; font-weight: 300; }
+  .prompt-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; }
+  .prompt-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 8.5px; padding: 3px 9px;
+    border: 1px solid var(--border); border-radius: 20px;
+    color: var(--ink-soft); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .shuffle-btn {
+    width: 100%; padding: 14px; background: transparent;
+    color: var(--ink-mid); border: 1px solid var(--border); border-radius: 3px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .shuffle-btn:hover { background: var(--surface2); border-color: var(--ink-mid); color: var(--ink); }
+
+  /* ── WEEKLY RHYTHM ── */
+  .week-grid { padding: 24px 36px 44px; display: flex; flex-direction: column; gap: 10px; }
+  .day-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 3px; overflow: hidden;
+  }
+  .day-header {
+    padding: 14px 22px; display: flex;
+    justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none;
+  }
+  .day-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; margin-bottom: 2px; }
+  .day-task { font-size: 11px; color: var(--ink-mid); font-weight: 300; }
+  .day-chevron { font-size: 9px; color: var(--ink-soft); transition: transform 0.25s; flex-shrink: 0; }
+  .day-card.open .day-chevron { transform: rotate(180deg); }
+  .day-detail { display: none; padding: 0 22px 20px; border-top: 1px solid var(--border); }
+  .day-card.open .day-detail { display: block; }
+  .day-detail-list { list-style: none; padding-top: 16px; }
+  .day-detail-list li {
+    font-size: 12.5px; color: var(--ink-mid);
+    line-height: 1.75; padding: 4px 0 4px 20px;
+    position: relative; font-weight: 300;
+  }
+  .day-detail-list li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--wheat); font-size: 11px; top: 5px;
+  }
+
+  /* ── REFRAME BOX ── */
+  .reframe-box {
+    margin: 0 36px 28px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 26px 28px;
+    position: relative; overflow: hidden;
+  }
+  .reframe-box::before {
+    content: ''; position: absolute;
+    top: -30px; right: -30px;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(196,170,130,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .reframe-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--mustard); margin-bottom: 10px;
+  }
+  .reframe-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 300; font-style: italic;
+    color: var(--ink); line-height: 1.55;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 0 36px 28px; }
+
+  /* ── SETUP TAB ── */
+  .setup-section { padding: 24px 36px 44px; }
+  .setup-step {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 26px 26px 26px 30px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .setup-step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 0.18em;
+    color: var(--ink-soft); margin-bottom: 6px;
+  }
+  .setup-step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px; font-weight: 400; margin-bottom: 10px;
+  }
+  .setup-step-body {
+    font-size: 12.5px; line-height: 1.8;
+    color: var(--ink-mid); font-weight: 300;
+  }
+  .setup-step-body a {
+    color: var(--mustard); text-decoration: none; border-bottom: 1px solid var(--mustard);
+  }
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--ink);
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .copy-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--ink-mid);
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+  .copy-btn:hover { border-color: var(--mustard); color: var(--mustard); }
+
+  .url-input-row {
+    display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .url-input-row .form-input {
+    flex: 1; margin-bottom: 0; min-width: 200px;
+    font-size: 11px;
+  }
+  .connect-btn {
+    padding: 12px 20px;
+    background: var(--mustard);
+    color: white; border: none; border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; cursor: pointer;
+    transition: opacity 0.2s; white-space: nowrap;
+  }
+  .connect-btn:hover { opacity: 0.85; }
+
+  .setup-check {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    background: var(--sage-t);
+    border: 1px solid rgba(138,158,140,0.25);
+    border-radius: 3px;
+    margin-top: 14px;
+    font-size: 12.5px; color: var(--ink-mid);
+    font-weight: 300;
+  }
+  .setup-check-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--mustard); color: white;
+    padding: 11px 24px; border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: transform 0.3s ease; z-index: 999;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .hero, .section-header, .cards, .hit-form,
+    .hits-list, .prompt-container, .week-grid,
+    .setup-section { padding-left: 20px; padding-right: 20px; }
+    .reframe-box, .divider { margin-left: 20px; margin-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="showSection('workflow')">Workflow</button>
+  <button class="nav-tab" onclick="showSection('sacral')">Sacral Hits</button>
+  <button class="nav-tab" onclick="showSection('prompts')">First Video</button>
+  <button class="nav-tab" onclick="showSection('rhythm')">Weekly Rhythm</button>
+  <button class="nav-tab" onclick="showSection('setup')">⚙ Setup</button>
+</nav>
+
+<!-- ══ WORKFLOW ══ -->
+<div class="section active" id="workflow">
+  <div class="hero">
+    <div class="hero-eyebrow">MG Content Engine · Manifesting Generator</div>
+    <h1 class="hero-title">Respond.<br>Burst. <em>Distribute.</em></h1>
+    <p class="hero-sub">A content workflow built for your design — not the algorithm's. Three brands, one system, zero linear thinking.</p>
+    <div class="status-badge" onclick="showSection('setup')">
+      <div class="status-dot" id="nav-dot"></div>
+      <span id="nav-status-text">Not connected to Sheets</span>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-label">The System</div>
+    <h2 class="section-title">Your 3-Step Engine</h2>
+    <p class="section-desc">MGs don't generate from nothing. You respond to what's already alive, then burst, then distribute.</p>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-accent accent-sage"></div>
+      <div class="card-number">Step 01</div>
+      <div class="card-title">Response Capture</div>
+      <span class="card-time time-daily">Daily · 2 min</span>
+      <div class="card-body">Log Sacral Hits as they happen — the ooh, the mm-hmm, the spark. A customer question, a lab moment, something in your feed. Don't analyze. Just capture. This is your content source.<br><br>Works from any device — everything syncs to your Google Sheet.</div>
+    </div>
+    <div class="card">
+      <div class="card-accent accent-terracotta"></div>
+      <div class="card-number">Step 02</div>
+      <div class="card-title">The Burst Session</div>
+      <span class="card-time time-weekly">Weekly · 60–90 min</span>
+      <div class="card-body">Once a week, review your Sacral Hits. Pick 2–3 that still feel alive. Film back to back — talking points only, no full script. Your Aries rising means you're better unrehearsed. Over-preparation is the Aquarius anxiety loop.<br><br>Your three brands self-sort naturally:</div>
+      <div class="brand-row">
+        <span class="brand-badge brand-oyin">Oyin — lab &amp; ritual</span>
+        <span class="brand-badge brand-jamyla">Hey Jamyla — identity &amp; philosophy</span>
+        <span class="brand-badge brand-exit">Exit — systems &amp; freedom</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-accent accent-wheat"></div>
+      <div class="card-number">Step 03</div>
+      <div class="card-title">The Splinter System</div>
+      <span class="card-time time-weekly">Post-Burst</span>
+      <div class="card-body">One burst session = one YouTube video + 3 Threads posts + 1 email hook + 2 Reels/TikToks.<br><br>YouTube comes first as the long-form anchor, not last. Everything else is a splinter of the original Sacral Hit.</div>
+    </div>
+    <div class="card">
+      <div class="card-accent accent-mauve"></div>
+      <div class="card-number">Monthly</div>
+      <div class="card-title">The Witness Review</div>
+      <span class="card-time time-monthly">Monthly · 20 min</span>
+      <div class="card-body">Gate 13.2 — the Witness. Review what resonated. Not just metrics — your gut response too. What felt true? What felt performed? Prune accordingly.<br><br>You don't need more content. You need more of what's actually yours.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SACRAL HITS ══ -->
+<div class="section" id="sacral">
+  <div class="hero">
+    <div class="hero-eyebrow">Step 01 of 3 · Response Capture</div>
+    <h1 class="hero-title">Sacral <em>Hits.</em></h1>
+    <p class="hero-sub">When something makes you go ooh or mm-hmm — capture it here. Syncs to your Google Sheet so it's always with you.</p>
+    <div class="status-badge" onclick="showSection('setup')">
+      <div class="status-dot" id="sacral-dot"></div>
+      <span id="sacral-status-text">Not connected · tap to set up</span>
+    </div>
+  </div>
+
+  <div class="hit-form">
+    <div class="hit-form-card">
+      <label class="form-label">The spark — what just got your attention?</label>
+      <textarea class="form-textarea" id="hit-text" placeholder="A customer asked me... / I just noticed that... / This thing keeps coming up..."></textarea>
+
+      <label class="form-label">Which brand does it belong to?</label>
+      <select class="form-select" id="hit-brand">
+        <option value="">— choose —</option>
+        <option value="Oyin Handmade">Oyin Handmade — lab, ritual, product</option>
+        <option value="Hey Jamyla">Hey Jamyla — identity, philosophy, life</option>
+        <option value="Exit the Apple">Exit the Apple — systems, business, freedom</option>
+        <option value="Cross-brand">Could be any / cross-brand</option>
+      </select>
+
+      <label class="form-label">Gut intensity — how alive does this feel?</label>
+      <div class="gut-buttons">
+        <button class="gut-btn" onclick="selectGut(this, '🔥 On fire')">🔥 On fire</button>
+        <button class="gut-btn" onclick="selectGut(this, '✨ Feels right')">✨ Feels right</button>
+        <button class="gut-btn" onclick="selectGut(this, '🌱 Slow burn')">🌱 Slow burn</button>
+        <button class="gut-btn" onclick="selectGut(this, '❓ Not sure yet')">❓ Not sure yet</button>
+      </div>
+
+      <button class="save-btn" id="save-btn" onclick="saveHit()">↓ Log this hit</button>
+    </div>
+  </div>
+
+  <div class="section-header" style="padding-bottom:16px;">
+    <div class="section-label">Your Hits</div>
+    <h2 class="section-title" style="font-size:22px;">What's alive right now</h2>
+  </div>
+  <div class="hits-list" id="hits-list"></div>
+</div>
+
+<!-- ══ FIRST VIDEO ══ -->
+<div class="section" id="prompts">
+  <div class="hero">
+    <div class="hero-eyebrow">YouTube · First Video Back</div>
+    <h1 class="hero-title">Not a <em>launch.</em><br>A Sacral Hit<br>on camera.</h1>
+    <p class="hero-sub">Your first video isn't a production. It's a response captured on film. Pick a brand, pick a prompt, press record.</p>
+  </div>
+
+  <div class="reframe-box">
+    <div class="reframe-eyebrow">The Reframe</div>
+    <div class="reframe-text">"I'm not ready" is your profile waiting for permission from your own experience. File this under experiment, not performance.</div>
+  </div>
+
+  <div class="prompt-container">
+    <div class="section-label" style="margin-bottom:10px;">Filter by brand</div>
+    <div class="prompt-selector">
+      <button class="prompt-filter active-oyin"  id="filter-oyin"   onclick="filterPrompts('oyin')">Oyin</button>
+      <button class="prompt-filter"              id="filter-jamyla" onclick="filterPrompts('jamyla')">Hey Jamyla</button>
+      <button class="prompt-filter"              id="filter-exit"   onclick="filterPrompts('exit')">Exit the Apple</button>
+    </div>
+    <div id="prompt-display"></div>
+    <button class="shuffle-btn" onclick="shufflePrompt()">↻ Give me a different prompt</button>
+  </div>
+</div>
+
+<!-- ══ WEEKLY RHYTHM ══ -->
+<div class="section" id="rhythm">
+  <div class="hero">
+    <div class="hero-eyebrow">Weekly Rhythm · MG Edition</div>
+    <h1 class="hero-title">Low lift.<br><em>High truth.</em></h1>
+    <p class="hero-sub">MGs aren't built for daily content grind. This is a rhythm your sacral can actually sustain.</p>
+  </div>
+
+  <div class="section-header" style="padding-bottom:4px;">
+    <div class="section-label">Tap a day to expand</div>
+  </div>
+
+  <div class="week-grid">
+    <div class="day-card" onclick="toggleDay(this)">
+      <div class="day-header"><div><div class="day-name">Monday</div><div class="day-task">Open eyes. Log what's alive.</div></div><div class="day-chevron">▼</div></div>
+      <div class="day-detail"><ul class="day-detail-list">
+        <li>Review any Sacral Hits you captured over the weekend</li>
+        <li>Spend 2 min asking: what's a question I keep getting asked?</li>
+        <li>Log anything that got your attention — don't filter it</li>
+        <li>Do NOT plan this week's content yet. Just gather.</li>
+      </ul></div>
+    </div>
+    <div class="day-card" onclick="toggleDay(this)">
+      <div class="day-header"><div><div class="day-name">Tuesday</div><div class="day-task">Capture + continue.</div></div><div class="day-chevron">▼</div></div>
+      <div class="day-detail"><ul class="day-detail-list">
+        <li>Sacral Hit log: anything from the production floor, customer interactions, or your own rituals</li>
+        <li>Optional: voice memo while doing something else — driving, walking, in the lab</li>
+        <li>Light engagement: respond to comments or DMs as content research</li>
+      </ul></div>
+    </div>
+    <div class="day-card" onclick="toggleDay(this)">
+      <div class="day-header"><div><div class="day-name">Wednesday</div><div class="day-task">The Burst Session.</div></div><div class="day-chevron">▼</div></div>
+      <div class="day-detail"><ul class="day-detail-list">
+        <li>60–90 min protected time — the only non-negotiable day</li>
+        <li>Review Sacral Hits, pick 2–3 that still feel alive</li>
+        <li>Film back-to-back in the production facility — talking points only</li>
+        <li>One video per brand, or one cross-brand piece — follow the energy</li>
+        <li>Do NOT edit today. Just capture.</li>
+      </ul></div>
+    </div>
+    <div class="day-card" onclick="toggleDay(this)">
+      <div class="day-header"><div><div class="day-name">Thursday</div><div class="day-task">Splinter the burst.</div></div><div class="day-chevron">▼</div></div>
+      <div class="day-detail"><ul class="day-detail-list">
+        <li>Review footage — pull the 2–3 best clips or moments</li>
+        <li>Write or voice-memo 3 Threads posts from the same energy</li>
+        <li>Draft one email hook for Oyin or Hey Jamyla</li>
+        <li>Identify 1–2 short-form clips for Reels/TikTok</li>
+        <li>You don't have to post everything this week — the bank is fine</li>
+      </ul></div>
+    </div>
+    <div class="day-card" onclick="toggleDay(this)">
+      <div class="day-header"><div><div class="day-name">Friday</div><div class="day-task">Publish what's ready.</div></div><div class="day-chevron">▼</div></div>
+      <div class="day-detail"><ul class="day-detail-list">
+        <li>Post or schedule anything from Thursday that feels done</li>
+        <li>"Done" = good enough to be useful. Not perfect.</li>
+        <li>MG rule: if it still feels alive, post it. If the energy is gone, archive it.</li>
+        <li>Log what you published — for your monthly Witness review, not metrics</li>
+      </ul></div>
+    </div>
+    <div class="day-card" onclick="toggleDay(this)">
+      <div class="day-header"><div><div class="day-name">Weekend</div><div class="day-task">Rest is strategy.</div></div><div class="day-chevron">▼</div></div>
+      <div class="day-detail"><ul class="day-detail-list">
+        <li>No content work. MG sacral needs to recharge.</li>
+        <li>If a hit comes in — voice memo it, don't act on it</li>
+        <li>Yoga, nature walks, music, ritual — this is how you fill the well</li>
+        <li>Your best Monday content comes from a real weekend</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="reframe-box" style="margin-bottom:40px;">
+    <div class="reframe-eyebrow">On AuDHD + MG Energy</div>
+    <div class="reframe-text">The block isn't laziness. It's misaligned strategy meeting executive function in a high-stakes frame. Lower the stakes. One response, on camera, in the place you already work. That's the whole first video.</div>
+  </div>
+</div>
+
+<!-- ══ SETUP ══ -->
+<div class="section" id="setup">
+  <div class="hero">
+    <div class="hero-eyebrow">One-time Setup · Google Sheets Sync</div>
+    <h1 class="hero-title">Connect your <em>Sheet.</em></h1>
+    <p class="hero-sub">Five minutes once. Then every Sacral Hit you log — on your phone, laptop, anywhere — lands in the same Google Sheet.</p>
+  </div>
+
+  <div class="setup-section">
+
+    <div class="setup-step">
+      <div class="card-accent accent-mustard"></div>
+      <div class="setup-step-num">Step 01</div>
+      <div class="setup-step-title">Create your Google Sheet</div>
+      <div class="setup-step-body">
+        Go to <a href="https://sheets.new" target="_blank">sheets.new</a> to create a new spreadsheet. Name it something like <strong>MG Content Engine — Sacral Hits</strong>.<br><br>
+        In Row 1, add these exact headers in columns A–E:
+        <div class="code-block">Timestamp    Brand    Hit    Gut    Notes</div>
+        <button class="copy-btn" onclick="copyText('Timestamp\tBrand\tHit\tGut\tNotes')">Copy headers</button>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="card-accent accent-sage"></div>
+      <div class="setup-step-num">Step 02</div>
+      <div class="setup-step-title">Open Apps Script</div>
+      <div class="setup-step-body">
+        Inside your new Sheet, go to <strong>Extensions → Apps Script</strong>. Delete any existing code in the editor, then paste in the code below exactly as written:
+        <div class="code-block">function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp
+      .getActiveSpreadsheet()
+      .getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      new Date().toLocaleString(),
+      data.brand  || '',
+      data.hit    || '',
+      data.gut    || '',
+      data.notes  || ''
+    ]);
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'error', message: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  var hits = rows.slice(1).map(function(r) {
+    return { timestamp: r[0], brand: r[1], hit: r[2], gut: r[3], notes: r[4] };
+  });
+  return ContentService
+    .createTextOutput(JSON.stringify({ hits: hits }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+        <button class="copy-btn" onclick="copyScript()">Copy Apps Script code</button>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="card-accent accent-terracotta"></div>
+      <div class="setup-step-num">Step 03</div>
+      <div class="setup-step-title">Deploy as a Web App</div>
+      <div class="setup-step-body">
+        In the Apps Script editor:<br><br>
+        1. Click <strong>Deploy → New deployment</strong><br>
+        2. Click the gear icon next to "Type" and select <strong>Web app</strong><br>
+        3. Set <strong>Execute as:</strong> Me<br>
+        4. Set <strong>Who has access:</strong> Anyone<br>
+        5. Click <strong>Deploy</strong> and authorize when prompted<br>
+        6. Copy the <strong>Web app URL</strong> — it starts with <code style="font-family:'DM Mono',monospace;font-size:11px;">https://script.google.com/macros/s/...</code>
+        <div class="setup-check">
+          <span class="setup-check-icon">💡</span>
+          Every time you edit the script you'll need to create a new deployment — but you only do this setup once.
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-step">
+      <div class="card-accent accent-mauve"></div>
+      <div class="setup-step-num">Step 04</div>
+      <div class="setup-step-title">Paste your Web App URL here</div>
+      <div class="setup-step-body">
+        Paste the URL from Step 03 below and click Connect. That's it — all your Sacral Hits will start syncing to your Sheet from any device.
+        <div class="url-input-row">
+          <input type="text" class="form-input" id="apps-script-url" placeholder="https://script.google.com/macros/s/..." />
+          <button class="connect-btn" onclick="saveScriptUrl()">Connect</button>
+        </div>
+        <div id="connection-feedback" style="margin-top:12px;font-size:12px;color:var(--ink-mid);"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">Hit logged ✓</div>
+
+<script>
+  // ── NAV ──
+  const sections = ['workflow','sacral','prompts','rhythm','setup'];
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-tab')[sections.indexOf(id)].classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function toggleDay(card) { card.classList.toggle('open'); }
+
+  // ── GUT ──
+  let selectedGut = '';
+  function selectGut(btn, val) {
+    document.querySelectorAll('.gut-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedGut = val;
+  }
+
+  // ── GOOGLE SHEETS CONFIG ──
+  let SCRIPT_URL = localStorage.getItem('mg_script_url') || '';
+
+  function saveScriptUrl() {
+    const val = document.getElementById('apps-script-url').value.trim();
+    if (!val.startsWith('https://script.google.com')) {
+      document.getElementById('connection-feedback').textContent = '⚠ That doesn\'t look like a Google Apps Script URL. Double-check the Deploy step.';
+      return;
+    }
+    SCRIPT_URL = val;
+    localStorage.setItem('mg_script_url', val);
+    updateStatusBadges('connected');
+    document.getElementById('connection-feedback').innerHTML = '✓ Connected! Your Sacral Hits will now sync to Google Sheets from any device.';
+    showToast('Connected to Sheets ✓');
+    loadHitsFromSheet();
+  }
+
+  function updateStatusBadges(state) {
+    const dots = ['nav-dot','sacral-dot'];
+    const texts = {
+      connected: 'Connected to Google Sheets',
+      error:     'Sheets error — tap to check setup',
+      off:       'Not connected · tap to set up'
+    };
+    dots.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.className = 'status-dot'; if (state !== 'off') el.classList.add(state); }
+    });
+    ['nav-status-text','sacral-status-text'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = texts[state] || texts.off;
+    });
+  }
+
+  // pre-fill URL field if already saved
+  if (SCRIPT_URL) {
+    document.getElementById('apps-script-url').value = SCRIPT_URL;
+    updateStatusBadges('connected');
+  }
+
+  // ── SAVE HIT ──
+  async function saveHit() {
+    const text = document.getElementById('hit-text').value.trim();
+    const brand = document.getElementById('hit-brand').value;
+    if (!text) return;
+
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const hit = {
+      brand: brand || 'Cross-brand',
+      hit:   text,
+      gut:   selectedGut || '—',
+      notes: ''
+    };
+
+    if (SCRIPT_URL) {
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(hit)
+        });
+        updateStatusBadges('connected');
+      } catch (err) {
+        console.warn('Sheets sync failed, saving locally', err);
+        updateStatusBadges('error');
+      }
+    }
+
+    // always save locally too as a fallback cache
+    let local = JSON.parse(localStorage.getItem('sacralHits') || '[]');
+    local.unshift({ id: Date.now(), ...hit, date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}) });
+    localStorage.setItem('sacralHits', JSON.stringify(local));
+
+    document.getElementById('hit-text').value = '';
+    document.getElementById('hit-brand').value = '';
+    document.querySelectorAll('.gut-btn').forEach(b => b.classList.remove('selected'));
+    selectedGut = '';
+    btn.disabled = false;
+    btn.textContent = '↓ Log this hit';
+
+    renderHits(local);
+    showToast(SCRIPT_URL ? 'Synced to Sheets ✓' : 'Hit logged locally ✓');
+  }
+
+  // ── LOAD FROM SHEET ──
+  async function loadHitsFromSheet() {
+    if (!SCRIPT_URL) { renderHits(JSON.parse(localStorage.getItem('sacralHits')||'[]')); return; }
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const data = await res.json();
+      if (data.hits) {
+        const formatted = data.hits.reverse().map((h,i) => ({
+          id: i, brand: h.brand, hit: h.hit, gut: h.gut,
+          text: h.hit,
+          date: h.timestamp ? h.timestamp.split(',')[0] : ''
+        }));
+        renderHits(formatted);
+      }
+    } catch(e) {
+      // fall back to local
+      renderHits(JSON.parse(localStorage.getItem('sacralHits')||'[]'));
+    }
+  }
+
+  // ── RENDER HITS ──
+  const brandColors = {
+    'Oyin Handmade':   'var(--terracotta)',
+    'Hey Jamyla':      'var(--mauve)',
+    'Exit the Apple':  'var(--sage)',
+    'Cross-brand':     'var(--wheat)'
+  };
+
+  function renderHits(hits) {
+    const list = document.getElementById('hits-list');
+    if (!hits || hits.length === 0) {
+      list.innerHTML = '<div class="empty-state">Nothing logged yet.<br>The first hit might be why you opened this tool.</div>';
+      return;
+    }
+    list.innerHTML = hits.map(h => {
+      const label = h.brand || 'Cross-brand';
+      const color = brandColors[label] || 'var(--wheat)';
+      const text  = h.text || h.hit || '';
+      return `
+        <div class="hit-item">
+          <div class="hit-item-left">
+            <div class="hit-item-brand" style="color:${color}">${label}${h.date ? ' · ' + h.date : ''}</div>
+            <div class="hit-item-text">${text}</div>
+            <div class="hit-item-gut">${h.gut || ''}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── COPY HELPERS ──
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied ✓'));
+  }
+
+  function copyScript() {
+    const code = `function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp
+      .getActiveSpreadsheet()
+      .getActiveSheet();
+    var data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      new Date().toLocaleString(),
+      data.brand  || '',
+      data.hit    || '',
+      data.gut    || '',
+      data.notes  || ''
+    ]);
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'error', message: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp
+    .getActiveSpreadsheet()
+    .getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  var hits = rows.slice(1).map(function(r) {
+    return { timestamp: r[0], brand: r[1], hit: r[2], gut: r[3], notes: r[4] };
+  });
+  return ContentService
+    .createTextOutput(JSON.stringify({ hits: hits }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+    navigator.clipboard.writeText(code).then(() => showToast('Script copied ✓'));
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  // ── PROMPTS ──
+  const prompts = {
+    oyin: [
+      { text: "Walk into the test kitchen and respond to the last question a customer asked you about their hair.", meta: "Location: test kitchen or production floor. No script. Let the space ground you. The customer question is the prompt.", tags: ["responding","low-prep","5 min","customer POV"] },
+      { text: "Show one product, explain what it does to your hair — not what the label says. What does it actually do?", meta: "This is your expertise. You've been formulating since 2003. Speak from that, not from marketing language.", tags: ["product demo","founder POV","authority"] },
+      { text: "What's one thing about natural hair care that almost everybody gets wrong?", meta: "Aries rising: lead with the bold take. Don't soften it. Your six-step framework exists because you saw the gaps.", tags: ["opinion","contrarian","high value"] },
+      { text: "Walk through your own personal hair ritual — not the brand's, yours.", meta: "This is the intimacy that builds trust. The founder using her own product is the story.", tags: ["personal","ritual","brand trust"] },
+      { text: "What does 'care as a practice' actually mean inside your own routine?", meta: "Ties directly to your spring campaign. Let the concept live in your body first, then say it on camera.", tags: ["campaign tie-in","philosophy","seasonal"] }
+    ],
+    jamyla: [
+      { text: "What's one thing you know now about running a business that you had to learn the expensive way?", meta: "Gate 13 — the Witness — means your perspective is the content. You don't have to teach. Just witness your own experience.", tags: ["founder wisdom","retrospective","trust builder"] },
+      { text: "What does it actually feel like to be a multi-hyphenate? Not the aspirational version — the real one.", meta: "MG energy is polarizing because most content shows the wins. Your design calls you to be truthful about the complexity.", tags: ["identity","honest take","MG life"] },
+      { text: "How do you move through creative blocks without forcing it?", meta: "Speak from your own AuDHD and MG experience. This is witness content, not advice content.", tags: ["neurodivergent","creative process","personal"] },
+      { text: "What does a ritual actually look like in your day — not the aesthetic version?", meta: "Your mediumism philosophy meets the messy reality of running three brands and a household.", tags: ["ritual","real life","philosophy"] },
+      { text: "What are you currently learning about yourself as a creator?", meta: "Aquarius sun: you're drawn to what's evolving. This prompt lets you think out loud, which is your natural medium.", tags: ["evolving","self-inquiry","open-ended"] }
+    ],
+    exit: [
+      { text: "What's the first thing someone needs to understand before they can actually scale their product-based business?", meta: "Lead with the contrarian truth. You've been in this since 2003. The thing they don't tell you is your entry point.", tags: ["systems","foundational","high value"] },
+      { text: "What does contract manufacturing actually make possible — and what does it require?", meta: "This is your long-term scaling vision. Speak to it from experience and ambition both.", tags: ["contract mfg","scaling","institutional"] },
+      { text: "How do you build a content system when you're also the operator, the founder, and the face?", meta: "Meta and useful. You're living this right now. Speak from the experiment, not the result.", tags: ["content ops","solo founder","systems"] },
+      { text: "What's one thing you stopped doing in your business that made everything easier?", meta: "MG wisdom: the skip is the strategy. What did you let go of that freed your sacral energy?", tags: ["subtraction","simplify","honest"] },
+      { text: "If you were starting Oyin today — knowing what you know — what would you do differently in year one?", meta: "Retrospective wisdom from a 20+ year founder is rare. Your experience is the authority.", tags: ["retrospective","founder story","advice"] }
+    ]
+  };
+
+  let currentBrand = 'oyin', currentIndex = 0;
+
+  function filterPrompts(brand) {
+    currentBrand = brand; currentIndex = 0;
+    document.querySelectorAll('.prompt-filter').forEach(b => b.className = 'prompt-filter');
+    document.getElementById('filter-'+brand).className = 'prompt-filter active-'+brand;
+    renderPrompt();
+  }
+  function shufflePrompt() {
+    currentIndex = (currentIndex + 1) % prompts[currentBrand].length;
+    renderPrompt();
+  }
+  function renderPrompt() {
+    const list = prompts[currentBrand];
+    const p = list[currentIndex];
+    const names = { oyin:'Oyin Handmade', jamyla:'Hey Jamyla', exit:'Exit the Apple' };
+    document.getElementById('prompt-display').innerHTML = `
+      <div class="prompt-card">
+        <div class="prompt-number">${names[currentBrand]} · Prompt ${currentIndex+1} of ${list.length}</div>
+        <div class="prompt-text">"${p.text}"</div>
+        <div class="prompt-meta">${p.meta}</div>
+        <div class="prompt-tags">${p.tags.map(t=>`<span class="prompt-tag">${t}</span>`).join('')}</div>
+      </div>`;
+  }
+
+  // ── INIT ──
+  renderPrompt();
+  loadHitsFromSheet();
+</script>
+</body>
+</html>
