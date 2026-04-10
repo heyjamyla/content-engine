@@ -245,9 +245,9 @@
       <label class="form-label">Which brand?</label>
       <select class="form-select" id="hit-brand">
         <option value="">— choose —</option>
-        <option value="Oyin Handmade">Oyin Handmade — lab, ritual, product</option>
-        <option value="Hey Jamyla">Hey Jamyla — identity, philosophy, life</option>
-        <option value="Exit the Apple">Exit the Apple — systems, business, freedom</option>
+        <option value="Oyin Handmade">Oyin Handmade — ritual, wellness, culturally grounded care</option>
+        <option value="Hey Jamyla">Hey Jamyla — identity, joy, founder life, makers</option>
+        <option value="Exit the Apple">Exit the Apple — creativity, freedom, cultural grounding</option>
         <option value="Cross-brand">Cross-brand / not sure yet</option>
       </select>
       <label class="form-label">How alive does this feel?</label>
@@ -397,7 +397,7 @@
   <div class="section-header"><div class="section-label">The System</div><h2 class="section-title">Your 3-Step Engine</h2><p class="section-desc">MGs don't generate from nothing. You respond to what's already alive, then burst, then distribute.</p></div>
   <div class="cards">
     <div class="card"><div class="card-accent accent-sage"></div><div class="card-number">Step 01</div><div class="card-title">Response Capture</div><span class="card-time time-daily">Daily · 2 min</span><div class="card-body">Log what gets your attention as it happens. Don't analyze. Just capture. This is your content source. Works from any device — everything syncs to your Google Sheet.</div></div>
-    <div class="card"><div class="card-accent accent-terracotta"></div><div class="card-number">Step 02</div><div class="card-title">The Burst Session</div><span class="card-time time-weekly">Weekly · 60–90 min</span><div class="card-body">Review your captures. Pick 2–3 that still feel alive. Film back to back — talking points only, no full script. Aries rising means you're better unrehearsed. Over-preparation is the Aquarius anxiety loop.</div><div class="brand-row"><span class="brand-badge brand-oyin">Oyin — lab &amp; ritual</span><span class="brand-badge brand-jamyla">Hey Jamyla — identity &amp; philosophy</span><span class="brand-badge brand-exit">Exit — systems &amp; freedom</span></div></div>
+    <div class="card"><div class="card-accent accent-terracotta"></div><div class="card-number">Step 02</div><div class="card-title">The Burst Session</div><span class="card-time time-weekly">Weekly · 60–90 min</span><div class="card-body">Review your captures. Pick 2–3 that still feel alive. Film back to back — talking points only, no full script. Aries rising means you're better unrehearsed. Over-preparation is the Aquarius anxiety loop.</div><div class="brand-row"><span class="brand-badge brand-oyin">Oyin — ritual, wellness, care</span><span class="brand-badge brand-jamyla">Hey Jamyla — joy, identity, makers</span><span class="brand-badge brand-exit">Exit — creativity, freedom, culture</span></div></div>
     <div class="card"><div class="card-accent accent-wheat"></div><div class="card-number">Step 03</div><div class="card-title">The Splinter System</div><span class="card-time time-weekly">Post-Burst</span><div class="card-body">One burst session = one YouTube video + 3 Threads posts + 1 email hook + 2 Reels/TikToks. YouTube comes first as the long-form anchor. Everything else is a splinter of the original capture.</div></div>
     <div class="card"><div class="card-accent accent-mauve"></div><div class="card-number">Monthly</div><div class="card-title">The Witness Review</div><span class="card-time time-monthly">Monthly · 20 min</span><div class="card-body">Gate 13.2 — the Witness. Review what resonated. What felt true? What felt performed? Prune accordingly. You don't need more content. You need more of what's actually yours.</div></div>
   </div>
@@ -800,17 +800,26 @@ async function expandWithAI(){
   }
 }
 
-// ── CLAUDE API ──
+// ── CLAUDE API (proxied) ──
 async function callClaudeExpand(hitText,brand){
-  const sys=`You are a content strategy assistant for Jamyla Bennu — Black American entrepreneur, founder of Oyin Handmade (natural hair care, est. 2003), Hey Jamyla (personal brand), and Exit the Apple (business systems). AuDHD Manifesting Generator, Aquarius sun, Aries rising. Content philosophy: respond to what's alive, speak from witness not performance.
+  const sys=`You are a content strategy assistant for Jamyla Bennu — Black American entrepreneur and AuDHD Manifesting Generator (Aquarius sun, Aries rising). She runs three brands:
+
+OYIN HANDMADE: Natural hair and body care brand (est. 2003). Lab, ritual, product, wellness, culturally grounded self-care, ingredients, tips and tricks for a balanced and joyful life. Speaks to Black women who want to care for themselves deeply and simply.
+
+HEY JAMYLA: Jamyla's personal brand. Identity, philosophy, life, founder energy, sparks of joy, practice of joy — expressed through journaling, books, community. Also covers systems, business, freedom, and small manufacturer stories and support for other makers.
+
+EXIT THE APPLE (Pierre Bennu's channel, Jamyla supports): Creativity as a practice that encourages freedom. Culturally grounding and creativity-supporting products and ideas. Not about scaling a product biz — about creative liberation, cultural identity, and the practice of making.
+
+Content philosophy: respond to what's alive, speak from witness not performance, trust the gut over the plan.
 
 Return ONLY a JSON object, no markdown, no preamble:
 {"bullets":["point 1","point 2","point 3","point 4","point 5"],"brandAngles":[{"brand":"Oyin Handmade","angle":"..."},{"brand":"Hey Jamyla","angle":"..."},{"brand":"Exit the Apple","angle":"..."}],"cameraPrompt":"Single sentence starting with an action verb — the exact thing to say or do when pressing record."}`;
+
   const res=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',max_tokens:1000,
+      model:'claude-sonnet-4-6',max_tokens:1000,
       system:sys,
       messages:[{role:'user',content:`Brand: ${brand||'Cross-brand'}\nCapture: ${hitText}\n\nExpand this.`}]
     })
@@ -847,10 +856,14 @@ async function refreshPrompts(){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
-        system:`You are a content strategy assistant for Jamyla Bennu — founder of Oyin Handmade, Hey Jamyla, and Exit the Apple. AuDHD Manifesting Generator, Aquarius sun, Aries rising. Generate video prompts that feel like natural responses, not assignments. Return ONLY a JSON object, no markdown:
-{"oyin":[{"text":"...","meta":"..."},{"text":"...","meta":"..."},{"text":"...","meta":"..."},{"text":"...","meta":"..."},{"text":"...","meta":"..."}],"jamyla":[same 5],"exit":[same 5]}
-text = the video prompt (question or action verb). meta = 1-2 sentences coaching context specific to her design.`,
+        model:'claude-sonnet-4-6',max_tokens:1200,
+        system:`You are a content strategy assistant for Jamyla Bennu — AuDHD Manifesting Generator, Aquarius sun, Aries rising. Three brands:
+OYIN HANDMADE: natural hair/body care, lab, ritual, product, wellness, culturally grounded self-care, ingredients, tips for balanced joyful life.
+HEY JAMYLA: identity, philosophy, life, founder energy, sparks of joy, practice of joy, journaling, books, community, systems, business, freedom, small manufacturer stories, support for makers.
+EXIT THE APPLE (Pierre Bennu's channel): creativity as a practice that encourages freedom, culturally grounding products and ideas, creative liberation, cultural identity, the practice of making. NOT about scaling a product biz.
+Generate video prompts that feel like natural responses, not assignments. Return ONLY a JSON object, no markdown:
+{"oyin":[{"text":"...","meta":"..."},x5],"jamyla":[x5],"exit":[x5]}
+text = video prompt (question or action starting with verb). meta = 1-2 sentences of coaching context for her specific design.`,
         messages:[{role:'user',content:`Recent captures:\n${recentText}\n\nGenerate 15 fresh video prompts (5 per brand) inspired by these themes.`}]
       })
     });
@@ -870,25 +883,25 @@ text = the video prompt (question or action verb). meta = 1-2 sentences coaching
 // ── STATIC PROMPTS ──
 const staticPrompts={
   oyin:[
-    {text:"Walk into the test kitchen and respond to the last question a customer asked you about their hair.",meta:"No script. Let the space ground you. The customer question is the prompt.",tags:["responding","low-prep","customer POV"]},
-    {text:"Show one product and explain what it actually does — not what the label says.",meta:"You've been formulating since 2003. Speak from that, not from marketing language.",tags:["product demo","founder POV"]},
-    {text:"What's one thing about natural hair care that almost everybody gets wrong?",meta:"Lead with the bold take. Don't soften it. Your six-step framework exists because you saw the gaps.",tags:["opinion","contrarian"]},
-    {text:"Walk through your own personal hair ritual — not the brand's, yours.",meta:"The founder using her own product is the story.",tags:["personal","ritual"]},
-    {text:"What does 'care as a practice' actually mean inside your own routine?",meta:"Let the campaign concept live in your body first, then say it on camera.",tags:["philosophy","seasonal"]}
+    {text:"Walk into the lab and respond to the last hair or skin question a customer sent you.",meta:"The customer's question is the whole prompt. Your answer from inside the production space is the content — no setup needed.",tags:["responding","lab","customer POV"]},
+    {text:"Pick one ingredient you love working with and tell us why it belongs in a self-care ritual.",meta:"This is your ingredient knowledge meets your cultural grounding. Speak to the whole person, not just the hair.",tags:["ingredients","wellness","ritual"]},
+    {text:"What does culturally grounded self-care actually mean — and how does it show up in what you make?",meta:"This is the deeper Oyin story. Not product specs — the why behind formulating for your community since 2003.",tags:["cultural grounding","brand story","depth"]},
+    {text:"Share one tip that would change someone's hair or skin routine if they applied it consistently.",meta:"Practical and warm. You know what works. Speak from the six-step framework without naming it as a framework.",tags:["tips","practical","wellness"]},
+    {text:"What does a balanced and joyful hair day actually feel like — and what makes it possible?",meta:"Joy is part of the Oyin brand promise. Let this be sensory and specific. What does it smell like, feel like, look like?",tags:["joy","ritual","sensory"]}
   ],
   jamyla:[
-    {text:"What's one thing you know now about running a business that you had to learn the expensive way?",meta:"Gate 13 — the Witness. You don't have to teach. Just witness your own experience.",tags:["founder wisdom","retrospective"]},
-    {text:"What does it actually feel like to be a multi-hyphenate? Not the aspirational version — the real one.",meta:"Your design calls you to be truthful about the complexity.",tags:["identity","honest take"]},
-    {text:"How do you move through creative blocks without forcing it?",meta:"Speak from your AuDHD and MG experience. Witness content, not advice content.",tags:["neurodivergent","creative process"]},
-    {text:"What does a ritual actually look like in your day — not the aesthetic version?",meta:"Your mediumism philosophy meets the messy reality of three brands and a household.",tags:["ritual","real life"]},
-    {text:"What are you currently learning about yourself as a creator?",meta:"Aquarius sun: you're drawn to what's evolving. Think out loud — it's your natural medium.",tags:["evolving","self-inquiry"]}
+    {text:"What does the practice of joy look like for you this week — concretely, not aspirationally?",meta:"Gate 13 — the Witness. Not what joy should look like, what it actually looks like in your particular life right now.",tags:["joy","witness","real life"]},
+    {text:"Share something you read, heard, or wrote in your journal lately that cracked something open.",meta:"Books, journaling, and community are core to Hey Jamyla. Your intellectual and emotional life is the content.",tags:["journaling","books","inner life"]},
+    {text:"What does it feel like to be a small manufacturer — the parts nobody talks about?",meta:"You support other makers from lived experience. This is witness content for the maker community — honest, specific, and rare.",tags:["small manufacturer","makers","honest"]},
+    {text:"What systems or habits are actually holding your life together right now?",meta:"Systems plus founder energy plus real life. AuDHD Manifesting Generator talking to others who need scaffolding that works for their brain.",tags:["systems","founder life","AuDHD"]},
+    {text:"What's a spark of joy that surprised you recently — something small that lit you up?",meta:"Aquarius sun notices what others miss. The small surprising joy is always more interesting than the planned one.",tags:["sparks of joy","Aquarius","specific"]}
   ],
   exit:[
-    {text:"What's the first thing someone needs to understand before they can actually scale their product-based business?",meta:"Lead with the contrarian truth. You've been in this since 2003.",tags:["systems","foundational"]},
-    {text:"What does contract manufacturing actually make possible — and what does it require?",meta:"Speak to it from experience and ambition both. Dual perspective = depth.",tags:["contract mfg","scaling"]},
-    {text:"How do you build a content system when you're also the operator, the founder, and the face?",meta:"Meta and useful. You're living this right now.",tags:["content ops","systems"]},
-    {text:"What's one thing you stopped doing in your business that made everything easier?",meta:"The skip is the strategy. What did you let go of that freed your energy?",tags:["subtraction","honest"]},
-    {text:"If you were starting Oyin today — knowing what you know — what would you do differently in year one?",meta:"Retrospective wisdom from a 20+ year founder is rare. Let it speak plainly.",tags:["retrospective","founder story"]}
+    {text:"What does it mean to treat creativity as a daily practice rather than a result?",meta:"This is the heart of Exit the Apple. Pierre's work lives here. Respond from what you've both witnessed about what sustains creative work over time.",tags:["creativity","practice","philosophy"]},
+    {text:"Share one object, tool, or resource that supports your creative life and why it matters.",meta:"Exit the Apple carries creativity-supporting products. This is the content that connects the store to the practice — personal, specific, cultural.",tags:["creative tools","products","personal"]},
+    {text:"What does cultural grounding feel like when you're in the middle of making something?",meta:"This is the Exit the Apple DNA — not hustle, not productivity, but rootedness as a creative resource. Pierre's frame, your witness.",tags:["cultural grounding","making","deep"]},
+    {text:"What gets in the way of people allowing themselves to be creative — and what actually helps?",meta:"Speak from your own experience and from watching Pierre build. The blocks are real. The unlocks are specific.",tags:["creative blocks","freedom","witness"]},
+    {text:"What's one thing about the practice of making that you wish more people understood?",meta:"This is the mission statement expressed through a moment of truth. Aries rising: lead with the real thing, not the soft version.",tags:["making","truth","mission"]}
   ]
 };
 let customPrompts={oyin:[],jamyla:[],exit:[]};
